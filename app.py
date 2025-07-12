@@ -7,7 +7,7 @@ import streamlit as st
 
 # st.title("Welcome to Streamlit App")
 
-st.title("Welcome to CarValuatorX")
+st.title("AutoValuatorPro")
 st.write("This is a simple Streamlit app.")
 
 # import streamlit as st
