@@ -72,78 +72,91 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 import pandas as pd 
 import numpy as np 
 import pickle as pk 
 import streamlit as st
 
-# Title and subtitle
-st.title("🚗 CarValuatorX - Car Price Prediction App")
-st.write("🔍 Enter the car details below to get an estimated selling price.")
-
-# Load ML model
-model = pk.load(open('model.pkl', 'rb'))
-
-# Load and preprocess car data
+# Load model and data
+model = pk.load(open('model.pkl','rb'))
 cars_data = pd.read_csv('Cardetails.csv')
 
+# Preprocess car names
 def get_brand_name(car_name):
-    return car_name.split(' ')[0].strip()
+    car_name = car_name.split(' ')[0]
+    return car_name.strip()
 
 cars_data['name'] = cars_data['name'].apply(get_brand_name)
 
-# Input form
-st.header('📋 Car Details Input')
+# --- UI Setup ---
+st.title("🚗 Welcome to CarValuatorX")
+st.write("Predict your car's resale price using machine learning.")
 
+st.header('🧠 Car Price Prediction ML Model')
+
+# --- Input Widgets ---
 name = st.selectbox('Select Car Brand', cars_data['name'].unique())
-year = st.slider('Car Manufacturing Year', 1994, 2024)
-km_driven = st.slider('Kilometers Driven', 11, 200000)
+year = st.slider('Car Manufactured Year', 1994, 2024)
+km_driven = st.slider('No. of Kilometers Driven', 11, 200000)
 fuel = st.selectbox('Fuel Type', cars_data['fuel'].unique())
 seller_type = st.selectbox('Seller Type', cars_data['seller_type'].unique())
 transmission = st.selectbox('Transmission Type', cars_data['transmission'].unique())
-owner = st.selectbox('Ownership Type', cars_data['owner'].unique())
+owner = st.selectbox('Owner Type', cars_data['owner'].unique())
 mileage = st.slider('Mileage (km/l)', 10, 40)
 engine = st.slider('Engine Capacity (CC)', 700, 5000)
 max_power = st.slider('Max Power (BHP)', 0, 200)
-seats = st.slider('Number of Seats', 5, 10)
+seats = st.slider('Number of Seats', 2, 10)
 
-# Prediction section
+# --- New Feature: Input Summary Preview ---
+st.subheader("🔍 Selected Car Details Preview:")
+st.markdown(f"**Brand**: {name}")
+st.markdown(f"**Year**: {year}")
+st.markdown(f"**Kilometers Driven**: {km_driven}")
+st.markdown(f"**Fuel Type**: {fuel}")
+st.markdown(f"**Seller Type**: {seller_type}")
+st.markdown(f"**Transmission**: {transmission}")
+st.markdown(f"**Owner Type**: {owner}")
+st.markdown(f"**Mileage**: {mileage} kmpl")
+st.markdown(f"**Engine**: {engine} CC")
+st.markdown(f"**Max Power**: {max_power} BHP")
+st.markdown(f"**Seats**: {seats}")
+
+# --- Prediction ---
 if st.button("🔮 Predict Price"):
     input_data_model = pd.DataFrame(
         [[name, year, km_driven, fuel, seller_type, transmission, owner, mileage, engine, max_power, seats]],
         columns=['name', 'year', 'km_driven', 'fuel', 'seller_type', 'transmission', 'owner', 'mileage', 'engine', 'max_power', 'seats']
     )
 
-    # Encoding categorical variables
-    input_data_model['owner'].replace(['First Owner', 'Second Owner', 'Third Owner',
-                                       'Fourth & Above Owner', 'Test Drive Car'],
-                                      [1, 2, 3, 4, 5], inplace=True)
-    input_data_model['fuel'].replace(['Diesel', 'Petrol', 'LPG', 'CNG'], [1, 2, 3, 4], inplace=True)
-    input_data_model['seller_type'].replace(['Individual', 'Dealer', 'Trustmark Dealer'], [1, 2, 3], inplace=True)
-    input_data_model['transmission'].replace(['Manual', 'Automatic'], [1, 2], inplace=True)
-    input_data_model['name'].replace(['Maruti', 'Skoda', 'Honda', 'Hyundai', 'Toyota', 'Ford', 'Renault',
-                                      'Mahindra', 'Tata', 'Chevrolet', 'Datsun', 'Jeep', 'Mercedes-Benz',
-                                      'Mitsubishi', 'Audi', 'Volkswagen', 'BMW', 'Nissan', 'Lexus',
-                                      'Jaguar', 'Land', 'MG', 'Volvo', 'Daewoo', 'Kia', 'Fiat', 'Force',
-                                      'Ambassador', 'Ashok', 'Isuzu', 'Opel'],
-                                     list(range(1, 32)), inplace=True)
+    # Label Encoding
+    input_data_model['owner'].replace(
+        ['First Owner', 'Second Owner', 'Third Owner', 'Fourth & Above Owner', 'Test Drive Car'],
+        [1, 2, 3, 4, 5], inplace=True)
 
-    # Predict and display result
+    input_data_model['fuel'].replace(
+        ['Diesel', 'Petrol', 'LPG', 'CNG'],
+        [1, 2, 3, 4], inplace=True)
+
+    input_data_model['seller_type'].replace(
+        ['Individual', 'Dealer', 'Trustmark Dealer'],
+        [1, 2, 3], inplace=True)
+
+    input_data_model['transmission'].replace(
+        ['Manual', 'Automatic'],
+        [1, 2], inplace=True)
+
+    input_data_model['name'].replace(
+        ['Maruti', 'Skoda', 'Honda', 'Hyundai', 'Toyota', 'Ford', 'Renault',
+         'Mahindra', 'Tata', 'Chevrolet', 'Datsun', 'Jeep', 'Mercedes-Benz',
+         'Mitsubishi', 'Audi', 'Volkswagen', 'BMW', 'Nissan', 'Lexus',
+         'Jaguar', 'Land', 'MG', 'Volvo', 'Daewoo', 'Kia', 'Fiat', 'Force',
+         'Ambassador', 'Ashok', 'Isuzu', 'Opel'],
+        list(range(1, 32)), inplace=True)
+
+    # Predict
     car_price = model.predict(input_data_model)
+
     st.success(f"💰 Estimated Car Price: ₹ {int(car_price[0]):,}")
-
-
 
 
 
