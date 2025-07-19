@@ -70,8 +70,6 @@
 
 
 
-
-
 import pandas as pd 
 import numpy as np 
 import pickle as pk 
@@ -107,7 +105,7 @@ engine = st.slider('Engine Capacity (CC)', 700, 5000)
 max_power = st.slider('Max Power (BHP)', 0, 200)
 seats = st.slider('Number of Seats', 2, 10)
 
-# --- New Feature: Input Summary Preview ---
+# --- Input Summary Preview ---
 st.subheader("🔍 Selected Car Details Preview:")
 st.markdown(f"**Brand**: {name}")
 st.markdown(f"**Year**: {year}")
@@ -153,11 +151,13 @@ if st.button("🔮 Predict Price"):
          'Ambassador', 'Ashok', 'Isuzu', 'Opel'],
         list(range(1, 32)), inplace=True)
 
-    # Predict
+    # --- Enhanced Prediction with Range ---
     car_price = model.predict(input_data_model)
+    price = int(car_price[0])
+    lower = int(price * 0.95)
+    upper = int(price * 1.05)
 
-    st.success(f"💰 Estimated Car Price: ₹ {int(car_price[0]):,}")
-
-
+    st.success(f"💰 Estimated Car Price: ₹ {price:,}")
+    st.info(f"📉 Price Range: ₹ {lower:,} - ₹ {upper:,}")
 
 
