@@ -14,7 +14,7 @@ st.write("This is a simple Streamlit app.")
 
 model = pk.load(open('model.pkl','rb'))
 
-st.header('Car Price Prediction ML Mode')
+st.header('CarValuePro: Intelligent Price Prediction System')
 
 cars_data = pd.read_csv('Cardetails.csv')
 
