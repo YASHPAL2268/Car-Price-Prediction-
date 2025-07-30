@@ -90,3 +90,5 @@ if st.button("Predict"):
     input_data_model.to_csv(buffer, index=False)
     st.download_button("Download Prediction as CSV", buffer.getvalue(), "prediction.csv", "text/csv")
 
+
+
