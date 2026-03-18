@@ -6,7 +6,7 @@ import io
 
 # App Title and Description
 st.title("AutoValuatorPro")
-st.write("A smart car price prediction app powered by Machine Learning.")
+st.write("A smart car price prediction app .")
 
 # Load model and data
 model = pk.load(open('model.pkl','rb'))
